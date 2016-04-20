@@ -26,12 +26,29 @@ class NodemailerProvider {
                 };
                 
                 // send email
-                this.transport.sendMail(transportOptions, (err, response) => {
+                this.transport.sendMail(transportOptions, (err, responses) => {
                     this.transport.close();
                     if (err) {
                         return reject(err);
                     }
-                    resolve(response);
+
+                    let results = [];
+
+                    responses.accepted.forEach((accepted) => {
+                        results.push({
+                            status: 'sent',
+                            email: accepted
+                        });
+                    });
+
+                    responses.rejected.forEach((rejected) => {
+                        results.push({
+                            status: 'rejected',
+                            email: rejected
+                        });
+                    });
+
+                    resolve(results);
                 });
             }, (err) => {
                 return reject(err);
