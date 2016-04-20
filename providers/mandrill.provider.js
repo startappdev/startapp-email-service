@@ -70,7 +70,21 @@ class MandrillProvider {
 
                 // send email using Mandrill API
                 this.mandrill_client.messages.send({"message": message}, (responses) => {
-                    resolve(responses);
+
+                    let results = responses.map((response) => {
+                        let result = {
+                            status: response.status,
+                            email: response.email,
+                        };
+
+                        if(response.rejection_reason) {
+                            result.reason = response.rejection_reason;
+                        }
+
+                        return result;
+                    });
+                    
+                    resolve(results);
                 }, (err) => {
                     return reject(err);
                 });
