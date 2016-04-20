@@ -77,13 +77,13 @@ class MandrillProvider {
                             email: response.email,
                         };
 
-                        if(response.rejection_reason) {
-                            result.reason = response.rejection_reason;
+                        if(response.reject_reason) {
+                            result.reason = response.reject_reason;
                         }
 
                         return result;
                     });
-                    
+
                     resolve(results);
                 }, (err) => {
                     return reject(err);
