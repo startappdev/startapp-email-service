@@ -61,7 +61,8 @@ class MandrillProvider {
                     },
                     tags: mailSettings.tags,
                     recipient_metadata: recipientMetadata,
-                    headers: {}
+                    headers: {},
+                    attachments: mailSettings.attachments || []
                 };
 
                 if (mailSettings.replyTo) {
