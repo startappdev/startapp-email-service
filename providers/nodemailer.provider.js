@@ -1,5 +1,6 @@
 'use strict';
 var templateService = require('../template.service.js'),
+    swig = require('swig'),
     nodemailer = require('nodemailer');
 
 class NodemailerProvider {
@@ -21,7 +22,7 @@ class NodemailerProvider {
                     to: mailSettings.to,
                     sender: mailSettings.sender || template.sender,
                     replyTo: mailSettings.replyTo || template.replyTo,
-                    subject: mailSettings.subject || template.subject,
+                    subject:swig.render((mailSettings.subject || template.subject), {locals:templateData}),
                     html: stringHtml
                 };
                 

@@ -1,6 +1,7 @@
 'use strict';
 let templateService = require('../template.service.js'),
     _ = require('lodash'),
+    swig = require('swig'),
     mandrill = require('mandrill-api/mandrill');
 
 class MandrillProvider {
@@ -51,7 +52,7 @@ class MandrillProvider {
                     from_email: from.email,
                     from_name: from.name,
                     to: to_emails,
-                    subject: mailSettings.subject || template.subject,
+                    subject:swig.render((mailSettings.subject || template.subject), {locals:templateData}),
                     html: stringHtml,
                     track_opens: true,
                     track_clicks: true,
