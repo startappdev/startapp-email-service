@@ -33,10 +33,11 @@ describe('Mandrill email provider service', () => {
     });
 
     beforeEach(function () {
-        mandrillEmailServiceClass = rewire('../providers/mandrill.provider.js');
+        mandrillEmailServiceClass = rewire('./mandrill.provider.js');
 
         templateService = {
-            getHtml: sinon.stub().returns(Promise.resolve())
+            getHtml: sinon.stub().returns(Promise.resolve()),
+            getHtmlSubject: () => Promise.resolve()
         };
         
         mandrill_client = {
