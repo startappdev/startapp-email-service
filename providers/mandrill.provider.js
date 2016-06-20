@@ -1,23 +1,22 @@
 'use strict';
 let templateService = require('../template.service.js'),
     _ = require('lodash'),
-    swig = require('swig'),
     mandrill = require('mandrill-api/mandrill');
 
 class MandrillProvider {
     constructor(config) {
         this.name = "mandrill";
-        
+
         let useTestApi = process.env.NODE_ENV === 'e2e' || process.env.NODE_ENV === 'test';
         let api_key = useTestApi ? config.testApiKey : config.apiKey;
         this.mandrill_client = new mandrill.Mandrill(api_key);
     }
 
     send(template, mailSettings, templateData) {
-        
+
         return new Promise((resolve, reject) => {
             templateService.getHtml(template, templateData).then((stringHtml) => {
-                
+
                 let recipientMetadata = [];
 
                 if (mailSettings.existingUsers) {
@@ -52,7 +51,7 @@ class MandrillProvider {
                     from_email: from.email,
                     from_name: from.name,
                     to: to_emails,
-                    subject:swig.render((mailSettings.subject || template.subject), {locals:templateData}),
+                    subject: templateService.getHtmlSubject(mailSettings.subject || template.subject, templateData),
                     html: stringHtml,
                     track_opens: true,
                     track_clicks: true,
@@ -76,10 +75,10 @@ class MandrillProvider {
                     let results = responses.map((response) => {
                         let result = {
                             status: response.status,
-                            email: response.email,
+                            email: response.email
                         };
 
-                        if(response.reject_reason) {
+                        if (response.reject_reason) {
                             result.reason = response.reject_reason;
                         }
 

@@ -5,9 +5,7 @@ var swig = require('swig'),
 
 
 class EmailTemplateService {
-
-    constructor() {}
-
+    
     /**
      * Method to get a specific rendered template by name
      * @param template - {Template Object} template from config
@@ -32,6 +30,10 @@ class EmailTemplateService {
                 resolve(output);
             });
         });
+    }
+
+    getHtmlSubject(template, data) {
+        return swig.render(template, {locals: data});
     }
 }
 

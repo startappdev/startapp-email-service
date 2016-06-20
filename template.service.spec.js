@@ -11,7 +11,7 @@ describe('Email template service', () => {
         templateService;
 
     beforeEach(function () {
-        templateService = rewire('../template.service.js');
+        templateService = rewire('./template.service.js');
 
         swig = {};
         templateService.__set__("swig", swig);

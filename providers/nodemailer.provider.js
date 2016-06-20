@@ -1,59 +1,53 @@
 'use strict';
 var templateService = require('../template.service.js'),
-    swig = require('swig'),
     nodemailer = require('nodemailer');
 
 class NodemailerProvider {
     constructor(config) {
         this.name = "nodemailer";
-        this.transport = nodemailer.createTransport(config);
+        this.config = config;
     }
 
     send(template, mailSettings, templateData) {
 
         let from = typeof mailSettings.from !== 'undefined' ? mailSettings.from : template.from;
 
-        return new Promise((resolve, reject) => {
-            templateService.getHtml(template, templateData).then((stringHtml) => {
+        return templateService.getHtml(template, templateData).then((stringHtml) => {
 
-                // prepare options object
-                var transportOptions = {
-                    from: `${from.name} <${from.email}>`, // Do not change - must be verified email address of startapp.com
-                    to: mailSettings.to,
-                    sender: mailSettings.sender || template.sender,
-                    replyTo: mailSettings.replyTo || template.replyTo,
-                    subject:swig.render((mailSettings.subject || template.subject), {locals:templateData}),
-                    html: stringHtml
-                };
-                
-                // send email
-                this.transport.sendMail(transportOptions, (err, responses) => {
-                    this.transport.close();
-                    if (err) {
-                        return reject(err);
-                    }
+            let nodemailer_transport = nodemailer.createTransport(this.config);
 
-                    let results = [];
+            // prepare options object
+            var transportOptions = {
+                from: `${from.name} <${from.email}>`, // Do not change - must be verified email address of startapp.com
+                to: mailSettings.to,
+                sender: mailSettings.sender || template.sender,
+                replyTo: mailSettings.replyTo || template.replyTo,
+                subject: templateService.getHtmlSubject(mailSettings.subject || template.subject, templateData),
+                html: stringHtml
+            };
 
-                    responses.accepted.forEach((accepted) => {
-                        results.push({
-                            status: 'sent',
-                            email: accepted
-                        });
-                    });
+            // send email
+            return nodemailer_transport.sendMail(transportOptions);
 
-                    responses.rejected.forEach((rejected) => {
-                        results.push({
-                            status: 'rejected',
-                            email: rejected
-                        });
-                    });
+        }).then((responses) => {
 
-                    resolve(results);
+            let results = [];
+
+            responses.accepted.forEach((accepted) => {
+                results.push({
+                    status: 'sent',
+                    email: accepted
                 });
-            }, (err) => {
-                return reject(err);
             });
+
+            responses.rejected.forEach((rejected) => {
+                results.push({
+                    status: 'rejected',
+                    email: rejected
+                });
+            });
+
+            return results;
         });
     }
 }
