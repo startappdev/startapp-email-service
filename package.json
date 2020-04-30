@@ -16,11 +16,17 @@
     "lodash": "^4.11.1",
     "mandrill-api": "^1.0.45",
     "nodemailer": "^2.3.2",
-    "swig": "^1.4.2"
+    "swig": "^1.4.2",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "rewire": "^2.5.1",
     "should": "^8.3.1",
     "sinon": "^1.17.3"
-  }
+  },
+  "scripts": {
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
+  "snyk": true
 }
